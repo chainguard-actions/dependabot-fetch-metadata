@@ -1,6 +1,12 @@
 # dependabot/fetch-metadata
 
-Hardened GitHub Action by [Chainguard](https://www.chainguard.dev).
+Hardened by [Chainguard](https://www.chainguard.dev) from the upstream action at [https://github.com/dependabot/fetch-metadata](https://github.com/dependabot/fetch-metadata).
+
+## Versions
+
+| Version | Tag | Upstream commit |
+|---------|-----|-----------------|
+| v3.0.0 | [`v3.0.0`](https://github.com/chainguard-actions/fetch-metadata/tree/v3.0.0) | — |
 
 ## Privacy
 
