@@ -2,5 +2,6 @@
   "owner": "dependabot",
   "name": "fetch-metadata",
   "visibility": "internal",
-  "description": "Extract information about the dependencies being updated by a Dependabot-generated PR."
+  "description": "Extract information about the dependencies being updated by a Dependabot-generated PR.",
+  "block_publish": false
 }
