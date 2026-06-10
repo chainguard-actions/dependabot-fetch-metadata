@@ -1,6 +1,6 @@
 # dependabot/fetch-metadata
 
-Extract information about the dependencies being updated by a Dependabot-generated PR.
+Extract information from about the dependency being updated by a Dependabot-generated PR
 
 Hardened by [Chainguard](https://www.chainguard.dev) from the upstream action at [https://github.com/dependabot/fetch-metadata](https://github.com/dependabot/fetch-metadata).
 
