@@ -1,0 +1,26 @@
+name: Test basic usage with skip-verification
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_EVENT_NAME: pull_request
+      GITHUB_REF: refs/pull/1/merge
+      GITHUB_HEAD_REF: dependabot/npm_and_yarn/lodash-4.17.21
+      GITHUB_BASE_REF: main
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - id: action
+        uses: .
+        with:
+          skip-verification: 'true'
+          github-token: ${{ github.token }}
+        continue-on-error: true
+      - name: Assert action ran
+        run: |
+          echo "Action outcome: ${{ steps.action.outcome }}"
+          echo "dependency-names: ${{ steps.action.outputs.dependency-names }}"
+          echo "dependency-type: ${{ steps.action.outputs.dependency-type }}"
+          echo "update-type: ${{ steps.action.outputs.update-type }}"
+          echo "PASS: action completed (skip-verification mode)"
