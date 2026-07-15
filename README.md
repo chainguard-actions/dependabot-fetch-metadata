@@ -9,6 +9,7 @@ Hardened by [Chainguard](https://www.chainguard.dev) from the upstream action at
 | Version | Tag | Upstream commit |
 |---------|-----|-----------------|
 | v1.3.6 | [`v1.3.6`](https://github.com/chainguard-actions/dependabot-fetch-metadata/tree/v1.3.6) | [`4de7a6c`](https://github.com/dependabot/fetch-metadata/commit/4de7a6c08ce727a42e0adbbdc345f761a01240ce) |
+| v2.5.0 | [`v2.5.0`](https://github.com/chainguard-actions/dependabot-fetch-metadata/tree/v2.5.0) | [`21025c7`](https://github.com/dependabot/fetch-metadata/commit/21025c705c08248db411dc16f3619e6b5f9ea21a) |
 | v3.0.0 | [`v3.0.0`](https://github.com/chainguard-actions/dependabot-fetch-metadata/tree/v3.0.0) | [`ffa630c`](https://github.com/dependabot/fetch-metadata/commit/ffa630c65fa7e0ecfa0625b5ceda64399aea1b36) |
 | v3.1.0 | [`v3.1.0`](https://github.com/chainguard-actions/dependabot-fetch-metadata/tree/v3.1.0) | [`25dd0e3`](https://github.com/dependabot/fetch-metadata/commit/25dd0e34f4fe68f24cc83900b1fe3fe149efef98) |
 
