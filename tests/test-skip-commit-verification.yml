@@ -1,0 +1,32 @@
+name: Test skip-commit-verification with no PR payload
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_EVENT_NAME: push
+      GITHUB_REF: refs/heads/main
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      # With skip-commit-verification=true and skip-verification=true, the action
+      # still needs a pull_request event payload. Without it, it should fail gracefully.
+      - id: action
+        uses: .
+        with:
+          github-token: ${{ github.token }}
+          skip-commit-verification: 'true'
+          skip-verification: 'true'
+        continue-on-error: true
+
+      - name: Assert action failed due to missing pull_request payload
+        env:
+          OUTCOME: ${{ steps.action.outcome }}
+        run: |
+          echo "outcome: $OUTCOME"
+          if [ "$OUTCOME" != "failure" ]; then
+            echo "FAIL: expected action to fail when no pull_request payload is present, but outcome was '$OUTCOME'"
+            exit 1
+          fi
+          echo "PASS: action correctly failed when no pull_request payload is present (skip-commit-verification=true)"
