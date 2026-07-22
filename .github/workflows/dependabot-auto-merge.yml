@@ -1,12 +1,15 @@
 name: Dependabot auto-merge
 on: pull_request_target
 
-permissions:
-  contents: read
+permissions: {}
 
 jobs:
   dependabot:
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+      pull-requests: write
 
     if: ${{ github.event.pull_request.user.login == 'dependabot[bot]' }}
     steps:
@@ -17,7 +20,7 @@ jobs:
           app-id: ${{ secrets.FETCH_METADATA_ACTION_AUTOMATION_APP_ID }}
           private-key: ${{ secrets.FETCH_METADATA_ACTION_AUTOMATION_PRIVATE_KEY }}
 
-      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
 
       - name: Auto-merge
         env:

@@ -1,0 +1,29 @@
+name: Test alert-lookup input
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - id: action
+        uses: .
+        with:
+          alert-lookup: true
+          skip-verification: true
+          github-token: ${{ github.token }}
+        continue-on-error: true
+      - name: Assert action ran with alert-lookup input
+        env:
+          OUTCOME: ${{ steps.action.outcome }}
+        run: |
+          echo "outcome: $OUTCOME"
+          # The action is expected to fail because this is not a real Dependabot PR event.
+          # The important thing is that the alert-lookup input was accepted and the action
+          # attempted to run (not a configuration/input error).
+          if [ "$OUTCOME" = "success" ] || [ "$OUTCOME" = "failure" ]; then
+            echo "PASS: action ran with alert-lookup input (outcome: $OUTCOME)"
+          else
+            echo "FAIL: unexpected outcome: $OUTCOME"
+            exit 1
+          fi

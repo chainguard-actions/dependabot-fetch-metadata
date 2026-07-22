@@ -12,12 +12,14 @@ on:
   release:
     types: [published]
 
-permissions:
-  contents: read
+permissions: {}
 
 jobs:
   Move-Tracking-Tag-To-Latest-Release:
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
 
     # We have a choice - defensiveness vs convenience:
     # 1. Be defensive by filtering if the release doesn't look like a normal
@@ -46,7 +48,7 @@ jobs:
           app-id: ${{ secrets.FETCH_METADATA_ACTION_AUTOMATION_APP_ID }}
           private-key: ${{ secrets.FETCH_METADATA_ACTION_AUTOMATION_PRIVATE_KEY }}
 
-      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           token: ${{ steps.generate_token.outputs.token }}
 
@@ -60,4 +62,4 @@ jobs:
         env:
           RELEASE_NAME: ${{ github.event.release.name }}
         run: |
-          echo ":rocket: Successfully moved the \`v2\` tag to point at release: $RELEASE_NAME with SHA: \`$GITHUB_SHA\`." >> $GITHUB_STEP_SUMMARY
+          echo ":rocket: Successfully moved the \`v2\` tag to point at release: $RELEASE_NAME with SHA: \`$GITHUB_SHA\`." >> "$GITHUB_STEP_SUMMARY"

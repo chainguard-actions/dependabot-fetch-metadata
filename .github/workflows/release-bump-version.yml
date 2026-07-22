@@ -15,12 +15,15 @@ on:  # yamllint disable-line rule:truthy
           - patch
         default: "minor"
 
-permissions:
-  contents: read
+permissions: {}
 
 jobs:
   Create-PR-To-Bump-Fetch-Metadata-Version:
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+      pull-requests: write
 
     steps:
       - name: Generate token
@@ -30,7 +33,7 @@ jobs:
           app-id: ${{ secrets.FETCH_METADATA_ACTION_AUTOMATION_APP_ID }}
           private-key: ${{ secrets.FETCH_METADATA_ACTION_AUTOMATION_PRIVATE_KEY }}
 
-      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           # Ensure we start from main in case the workflow is run from a branch
           ref: "main"
@@ -48,8 +51,8 @@ jobs:
         run: |
           NEW_VERSION=$(bin/bump-version "$VERSION_TYPE")
           echo "New version is: $NEW_VERSION"
-          safe_new_version=$(printf '%s' "$NEW_VERSION" | tr -d '\n\r')
-          echo "NEW_VERSION=$safe_new_version" >> "$GITHUB_ENV"
+          safe=$(printf '%s' "$NEW_VERSION" | tr -d '\n\r')
+          echo "NEW_VERSION=$safe" >> "$GITHUB_ENV"
 
       - name: Configure the git user
         run: |
@@ -59,7 +62,6 @@ jobs:
 
       - name: Create a branch and commit the changes
         env:
-          NEW_VERSION: ${{ env.NEW_VERSION }}
           REPOSITORY: ${{ github.repository }}
         run: |
           # Using an idempotent branch name ensures no duplicate PR's are created
@@ -82,24 +84,23 @@ jobs:
         run: |
           PR_URL=$(gh pr create --fill) # `fill` re-uses the title / body from the commit
           echo "PR created at URL: $PR_URL"
-          echo "PR_URL=$PR_URL" >> $GITHUB_ENV
+          safe_pr=$(printf '%s' "$PR_URL" | tr -d '\n\r')
+          echo "PR_URL=$safe_pr" >> "$GITHUB_ENV"
         env:
           GH_TOKEN: ${{ steps.generate_token.outputs.token }}
 
       - name: Set summary
         env:
-          NEW_VERSION: ${{ env.NEW_VERSION }}
-          PR_URL: ${{ env.PR_URL }}
           REPOSITORY: ${{ github.repository }}
         run: |
-          echo ":rocket: PR created at URL: $PR_URL" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "After the PR is approved/merged, create a new release tagged as \`$NEW_VERSION\`, _making sure to point it at the merge commit_:" >> $GITHUB_STEP_SUMMARY
-          echo "* You can do this via the web UI - use the \`Generate release notes\` button and then edit as needed: https://github.com/$REPOSITORY/releases/new?tag=$NEW_VERSION&title=$NEW_VERSION" >> $GITHUB_STEP_SUMMARY
-          echo "* Or via the GitHub CLI:" >> $GITHUB_STEP_SUMMARY
-          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-          echo "    gh release create $NEW_VERSION --title $NEW_VERSION --generate-notes --draft" >> $GITHUB_STEP_SUMMARY
-          echo "    > https://github.com/$REPOSITORY/releases/tag/untagged-XXXXXX" >> $GITHUB_STEP_SUMMARY
-          echo "    # Use the generated URL to review/edit the release notes." >> $GITHUB_STEP_SUMMARY
-          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-          echo "Once the release is tagged, another GitHub Action workflow automatically publishes the new version of the immutable action package for this release." >> $GITHUB_STEP_SUMMARY
+          echo ":rocket: PR created at URL: $PR_URL" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "After the PR is approved/merged, create a new release tagged as \`$NEW_VERSION\`, _making sure to point it at the merge commit_:" >> "$GITHUB_STEP_SUMMARY"
+          echo "* You can do this via the web UI - use the \`Generate release notes\` button and then edit as needed: https://github.com/$REPOSITORY/releases/new?tag=$NEW_VERSION&title=$NEW_VERSION" >> "$GITHUB_STEP_SUMMARY"
+          echo "* Or via the GitHub CLI:" >> "$GITHUB_STEP_SUMMARY"
+          echo "\`\`\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "    gh release create $NEW_VERSION --title $NEW_VERSION --generate-notes --draft" >> "$GITHUB_STEP_SUMMARY"
+          echo "    > https://github.com/$REPOSITORY/releases/tag/untagged-XXXXXX" >> "$GITHUB_STEP_SUMMARY"
+          echo "    # Use the generated URL to review/edit the release notes." >> "$GITHUB_STEP_SUMMARY"
+          echo "\`\`\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "Once the release is tagged, another GitHub Action workflow automatically publishes the new version of the immutable action package for this release." >> "$GITHUB_STEP_SUMMARY"
