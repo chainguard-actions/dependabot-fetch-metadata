@@ -1,0 +1,67 @@
+# TODO: This GitHub Action was migrated to Immutable Actions, which resolves versions from packages
+# rather than from git tags. So theoretically floating this tracking tag isn't necessary.
+# However, Immutable Actions are still in beta, and currently (May 8, 2025) only hosted runners
+# are resolving immutable actions from packages. Self-hosted runners are still pulling from git tags.
+# So we still need to float this tracking tag. Once Immutable Actions is fully GA'd, then _all_ runners
+# should be resolving from the immutable actions packages, and then we should delete both
+# this workflow AND the major version tracking git tags (e.g. `v2`, `v3`, etc).
+
+name: Release - Move Tracking Tag
+
+on:
+  release:
+    types: [published]
+
+permissions: {}
+
+jobs:
+  Move-Tracking-Tag-To-Latest-Release:
+    runs-on: ubuntu-latest
+
+    # This workflow dynamically extracts the major version from the release
+    # tag (e.g. `v3.0.0` -> `v3`) and moves the corresponding tracking tag.
+    # It assumes every release tag follows the `vN.Y.Z` format. If a release
+    # is tagged with something unexpected, the "Extract major version" step
+    # will fail with a clear error rather than silently doing the wrong thing.
+
+    steps:
+      - name: Generate token
+        id: generate_token
+        uses: actions/create-github-app-token@1b10c78c7865c340bc4f6099eb2f838309f1e8c3 # v3.1.1
+        with:
+          app-id: ${{ secrets.FETCH_METADATA_ACTION_AUTOMATION_APP_ID }}
+          private-key: ${{ secrets.FETCH_METADATA_ACTION_AUTOMATION_PRIVATE_KEY }}
+
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          token: ${{ steps.generate_token.outputs.token }}
+
+      - name: Extract major version from release tag
+        id: extract_major
+        env:
+          TAG: ${{ github.event.release.tag_name }}
+        run: |
+          MAJOR_TAG=$(echo "$TAG" | grep -oP '^v\d+')
+          if [[ -z "$MAJOR_TAG" ]]; then
+            echo "::error::Could not extract major version from release tag '$TAG'. Expected format: vN.Y.Z"
+            exit 1
+          fi
+          safe_major_tag=$(printf '%s' "$MAJOR_TAG" | tr -d '\n\r')
+          echo "major_tag=$safe_major_tag" >> "$GITHUB_OUTPUT"
+
+      - name: Move the tracking tag
+        env:
+          MAJOR_TAG: ${{ steps.extract_major.outputs.major_tag }}
+        run: git tag -f "$MAJOR_TAG"
+
+      - name: Push the new tag value back to the repo
+        env:
+          MAJOR_TAG: ${{ steps.extract_major.outputs.major_tag }}
+        run: git push -f origin "refs/tags/$MAJOR_TAG"
+
+      - name: Set summary
+        env:
+          SUMMARY_MAJOR_TAG: ${{ steps.extract_major.outputs.major_tag }}
+          SUMMARY_RELEASE_NAME: ${{ github.event.release.name }}
+        run: |
+          echo ":rocket: Successfully moved the \`$SUMMARY_MAJOR_TAG\` tag to point at release: $SUMMARY_RELEASE_NAME with SHA: \`$GITHUB_SHA\`." >> $GITHUB_STEP_SUMMARY

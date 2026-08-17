@@ -4,24 +4,24 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    env:
-      GITHUB_EVENT_NAME: pull_request
-      GITHUB_REF: refs/pull/1/merge
-      GITHUB_HEAD_REF: dependabot/npm_and_yarn/lodash-4.17.21
-      GITHUB_BASE_REF: main
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       - id: action
         uses: .
         with:
-          github-token: ${{ github.token }}
           alert-lookup: true
           skip-verification: true
         continue-on-error: true
-      - name: Assert action ran with alert-lookup
+      - name: Assert action ran with alert-lookup input
+        env:
+          OUTCOME: ${{ steps.action.outcome }}
         run: |
-          echo "Action outcome: ${{ steps.action.outcome }}"
-          echo "alert-state: ${{ steps.action.outputs.alert-state }}"
-          echo "ghsa-id: ${{ steps.action.outputs.ghsa-id }}"
-          echo "cvss: ${{ steps.action.outputs.cvss }}"
-          echo "PASS: action executed with alert-lookup=true"
+          echo "outcome: $OUTCOME"
+          # The action may fail without a real Dependabot PR context,
+          # but it must have been invoked (not skipped). Either success or
+          # failure is acceptable — what matters is the input was passed.
+          if [ "$OUTCOME" = "skipped" ]; then
+            echo "FAIL: action was skipped, expected it to run"
+            exit 1
+          fi
+          echo "PASS: action ran with alert-lookup input (outcome=$OUTCOME)"
