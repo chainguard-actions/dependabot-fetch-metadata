@@ -1,4 +1,4 @@
-name: Test basic usage - fetch metadata
+name: Test skip-verification mode
 on:
   workflow_dispatch:
 jobs:
@@ -12,19 +12,17 @@ jobs:
         continue-on-error: true
         with:
           github-token: ${{ github.token }}
-          skip-verification: false
+          skip-verification: true
 
       - name: Assert action ran (outputs set, or failed gracefully on the sentinel repo)
         env:
           OUTCOME: ${{ steps.action.outcome }}
           DEP_NAMES: ${{ steps.action.outputs.dependency-names }}
-          DEP_TYPE: ${{ steps.action.outputs.dependency-type }}
-          UPDATE_TYPE: ${{ steps.action.outputs.update-type }}
+          UPDATED_JSON: ${{ steps.action.outputs.updated-dependencies-json }}
         run: |
           echo "outcome: $OUTCOME"
           echo "dependency-names: $DEP_NAMES"
-          echo "dependency-type: $DEP_TYPE"
-          echo "update-type: $UPDATE_TYPE"
+          echo "updated-dependencies-json: $UPDATED_JSON"
           if [ "$OUTCOME" = "success" ]; then
             if [ -z "$DEP_NAMES" ]; then
               echo "FAIL: action succeeded but dependency-names output is empty"

@@ -1,0 +1,29 @@
+name: "Publish Immutable Action Version"
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+  
+    permissions:
+      contents: read
+      id-token: write
+      packages: write
+
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      
+      - name: Publish
+        id: publish
+        uses: actions/publish-immutable-action@4bc8754ffc40f27910afb20287dbbbb675a4e978 # v0.0.4
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Set summary
+        env:
+          RELEASE_NAME: ${{ github.event.release.name }}
+        run: |
+          echo ":rocket: Successfully published a new version of the immutable action package pointing at release: $RELEASE_NAME" >> "$GITHUB_STEP_SUMMARY"

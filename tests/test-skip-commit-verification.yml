@@ -1,4 +1,4 @@
-name: Test basic usage - fetch metadata
+name: Test skip-commit-verification mode (GHES)
 on:
   workflow_dispatch:
 jobs:
@@ -12,19 +12,20 @@ jobs:
         continue-on-error: true
         with:
           github-token: ${{ github.token }}
-          skip-verification: false
+          skip-verification: true
+          skip-commit-verification: true
 
       - name: Assert action ran (outputs set, or failed gracefully on the sentinel repo)
         env:
           OUTCOME: ${{ steps.action.outcome }}
           DEP_NAMES: ${{ steps.action.outputs.dependency-names }}
-          DEP_TYPE: ${{ steps.action.outputs.dependency-type }}
-          UPDATE_TYPE: ${{ steps.action.outputs.update-type }}
+          PREV_VERSION: ${{ steps.action.outputs.previous-version }}
+          NEW_VERSION: ${{ steps.action.outputs.new-version }}
         run: |
           echo "outcome: $OUTCOME"
           echo "dependency-names: $DEP_NAMES"
-          echo "dependency-type: $DEP_TYPE"
-          echo "update-type: $UPDATE_TYPE"
+          echo "previous-version: $PREV_VERSION"
+          echo "new-version: $NEW_VERSION"
           if [ "$OUTCOME" = "success" ]; then
             if [ -z "$DEP_NAMES" ]; then
               echo "FAIL: action succeeded but dependency-names output is empty"
