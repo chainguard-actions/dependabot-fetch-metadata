@@ -4,8 +4,13 @@
   "version": "v3.1.0",
   "commit_sha": "25dd0e34f4fe68f24cc83900b1fe3fe149efef98",
   "url": "https://github.com/dependabot/fetch-metadata",
-  "policy_sha": "d636be7e43ef829af6e853da6b3c7566db9f72fe",
+  "policy_sha": "374911c4be584df24e6da57af2d990570ef0f859",
   "test_policy_sha": "843adf9e4b8f85d0c08b27b9d0b09dd094b54702",
   "test_agent_version": "2",
-  "harden_agent_version": "2"
+  "harden_agent_version": "2",
+  "dist_artifact": {
+    "gcs_uri": "gs://patch-actions-node-artifacts/dist-artifacts/dependabot/fetch-metadata/v3.1.0/sha256-5d4e38a84c8939277681b9cb0e5f656a2dc6751b5252afc08a0c1043101a020f.tar.gz",
+    "sha256": "5d4e38a84c8939277681b9cb0e5f656a2dc6751b5252afc08a0c1043101a020f",
+    "size_bytes": 271833
+  }
 }
